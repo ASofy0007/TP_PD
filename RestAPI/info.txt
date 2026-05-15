@@ -1,15 +1,19 @@
 Pasta para a Web APi
 
 Correr mongoDB no docker: 
-docker run -d  --name mongodb  -p 27017:27017 mongo
-docker ps
-docker exec -it <id_container>  mongosh
-
-Usar a DB:
-- usar MongoDB for VS Code
-- terminal: show dbs
-            use moviesdb
-            show collections
+v1:
+  docker run -d --name mongodb  -p 27017:27017 mongo
+  docker ps
+  docker exec -it <id_container>  mongosh
+    show dbs
+    use moviesdb
+    show collections
+v2: GUI
+  docker network create movies-net
+  docker run -d --name mongodb --network movies-net -p 27017:27017  -v mongo_data:/data/db mongo
+  docker run -d --name mongo-express --network movies-net -p 8081:8081  -e ME_CONFIG_MONGODB_SERVER=mongodb -e ME_CONFIG_MONGODB_PORT=27017 -e ME_CONFIG_BASICAUTH=false  mongo-express
+  docker ps *deve estar mongodb e mongo-express
+  ir a http://localhost:8081
 
 
 usar MongoDB for VS Code
