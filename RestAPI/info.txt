@@ -1,0 +1,28 @@
+Pasta para a Web APi
+
+Movie:
+{
+  "title": "Inception",
+  "genre": "Sci-Fi",
+  "watched": true,
+  "watchedAt": "2026-05-14",
+  "userId": "abc123"
+}
+
+Movies 
+GET    /movies
+POST   /movies
+PUT    /movies/:id
+DELETE /movies/:id
+
+User:
+{
+  "name": "João",
+  "email": "joao@gmail.com"
+}
+GET    /users
+POST   /users
+
+GET /users/:id/history - Historico
+
+
