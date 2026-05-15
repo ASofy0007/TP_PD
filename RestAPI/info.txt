@@ -1,5 +1,19 @@
 Pasta para a Web APi
 
+Correr mongoDB no docker: 
+docker run -d  --name mongodb  -p 27017:27017 mongo
+docker ps
+docker exec -it <id_container>  mongosh
+
+Usar a DB:
+- usar MongoDB for VS Code
+- terminal: show dbs
+            use moviesdb
+            show collections
+
+
+usar MongoDB for VS Code
+
 Movie:
 {
   "title": "Inception",
@@ -12,8 +26,8 @@ Movie:
 Movies 
 GET    /movies
 POST   /movies
-PUT    /movies/:id
-DELETE /movies/:id
+PUT    /movies?:id
+DELETE /movies?:id
 
 User:
 {
