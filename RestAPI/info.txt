@@ -1,5 +1,3 @@
-Pasta para a Web APi
-
 Correr mongoDB no docker: 
 v1:
   docker run -d --name mongodb  -p 27017:27017 mongo
@@ -15,29 +13,16 @@ v2: GUI
   docker ps *deve estar mongodb e mongo-express
   ir a http://localhost:8081
 
+Correr esta app:  npm run dev
 
-usar MongoDB for VS Code
-
-Movie:
-{
-  "title": "Inception",
-  "genre": "Sci-Fi",
-  "watched": true,
-  "watchedAt": "2026-05-14",
-  "userId": "abc123"
-}
-
-Movies 
+Endpoints:
+Movies:
 GET    /movies
 POST   /movies
-PUT    /movies?:id
-DELETE /movies?:id
+PUT    /movies/id
+DELETE /movies/id
 
-User:
-{
-  "name": "João",
-  "email": "joao@gmail.com"
-}
+Users:
 GET    /users
 POST   /users
 
