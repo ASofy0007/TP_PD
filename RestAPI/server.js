@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const movieRoutes = require('./routes/movieRoutes');
 const userRoutes = require('./routes/userRoutes');
+const historyRoutes = require('./routes/historyRoutes');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.get('/', (req, res) => {
 
 app.use('/movies', movieRoutes);
 app.use('/users', userRoutes);
+app.use('/history', historyRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);

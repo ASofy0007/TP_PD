@@ -18,29 +18,26 @@ v2: GUI
 
 usar MongoDB for VS Code
 
-Movie:
-{
-  "title": "Inception",
-  "genre": "Sci-Fi",
-  "watched": true,
-  "watchedAt": "2026-05-14",
-  "userId": "abc123"
-}
-
-Movies 
+Endpoints:
+Movies:
 GET    /movies
 POST   /movies
 PUT    /movies?:id
 DELETE /movies?:id
 
 User:
-{
-  "name": "João",
-  "email": "joao@gmail.com"
-}
 GET    /users
 POST   /users
+POST /users/login - Login
 
-GET /users/:id/history - Historico
+History:
+GET /users/:id/history
+POST /history/watch
+PUT /history/ID - mudar data de watched
+DELETE /history/ID
+
+GET /history/unwatched/:id
+
+
 
 

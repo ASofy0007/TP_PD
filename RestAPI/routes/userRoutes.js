@@ -4,12 +4,15 @@ const router = express.Router();
 const {
   getUsers,
   createUser,
+  loginUser,
   getUserHistory
 } = require('../controllers/userController');
 
 router.get('/', getUsers);
 
 router.post('/', createUser);
+
+router.post('/login', loginUser);
 
 router.get('/:id/history', getUserHistory);
 

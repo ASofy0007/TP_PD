@@ -14,24 +14,8 @@ const MovieSchema = new mongoose.Schema({
 
   releaseYear: {
     type: Number
-  },
-
-  watched: {
-    type: Boolean,
-    default: false
-  },
-
-  watchedAt: {
-    type: Date
-  },
-
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
   }
 
-}, {
-  timestamps: true
 });
 
 module.exports = mongoose.model('Movie', MovieSchema);
