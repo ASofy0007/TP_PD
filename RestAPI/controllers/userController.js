@@ -38,31 +38,50 @@ exports.createUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-
   try {
-
     const { email, name } = req.body;
 
     let user = await User.findOne({ email });
 
     if (!user) {
+      if (!name) {
+        return res.status(400).json({
+          needsName: true,
+          message: "Name required to create user"
+        });
+      }
 
-      user = new User({
+      user = await User.create({
         email,
-        name: name || "User"
+        name
       });
-
-      await user.save();
     }
 
     res.json(user);
 
   } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-    res.status(500).json({
-      message: error.message
-    });
+exports.updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    const updated = await User.findByIdAndUpdate(
+      id,
+      { name: req.body.name },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(updated);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 

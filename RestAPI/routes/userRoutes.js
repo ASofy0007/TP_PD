@@ -5,7 +5,8 @@ const {
   getUsers,
   createUser,
   loginUser,
-  getUserHistory
+  getUserHistory,
+  updateUser
 } = require('../controllers/userController');
 
 router.get('/', getUsers);
@@ -16,4 +17,7 @@ router.post('/login', loginUser);
 
 router.get('/:id/history', getUserHistory);
 
+router.put("/:id", updateUser);
+
 module.exports = router;
+
