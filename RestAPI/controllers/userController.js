@@ -103,3 +103,24 @@ exports.getUserHistory = async (req, res) => {
 
   }
 };
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await User.findByIdAndDelete(id);
+
+    await WatchHistory.deleteMany({
+      userId: id
+    });
+
+    res.json({
+      message: "User deleted"
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
