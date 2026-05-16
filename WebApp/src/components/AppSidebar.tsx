@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import {
   LayoutDashboard,
   Film,
@@ -42,6 +43,9 @@ export function AppSidebar() {
 
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(user?.name ?? "");
+  useEffect(() => {
+    setName(user?.name ?? "");
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -50,6 +54,10 @@ export function AppSidebar() {
 
   const handleSave = async () => {
     if (!user) return;
+    if (name === user.name) {
+      setOpen(false);
+      return;
+    }
 
     try {
       const updated = await UsersAPI.update(user._id, {
@@ -107,7 +115,10 @@ export function AppSidebar() {
 
               {/* EDIT BUTTON */}
               <button
-                onClick={() => setOpen(true)}
+                onClick={() => {
+                  setName(user?.name ?? "");
+                  setOpen(true);
+                }}
                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
               >
                 <Pencil className="h-3 w-3" />

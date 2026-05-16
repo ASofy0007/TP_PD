@@ -10,7 +10,7 @@ import {
 
 import { useEffect } from "react";
 import appCss from "../styles.css?url";
-import { AppSidebar, MobileNav } from "@/components/AppSidebar";
+import { AppSidebar} from "@/components/AppSidebar";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
@@ -151,7 +151,6 @@ function AppShell() {
       <main className="flex-1 pb-16 md:pb-0 overflow-x-hidden">
         <Outlet />
       </main>
-      <MobileNav />
     </div>
   );
 }
