@@ -40,6 +40,10 @@ export const UsersAPI = {
     const res = await api.put(`/users/${id}`, data);
     return res.data;
   },
+  remove: async (id: string) => {
+    const res = await api.delete(`/users/${id}`);
+    return res.data;
+  },
 };
 
 export const MoviesAPI = {

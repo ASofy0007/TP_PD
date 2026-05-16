@@ -148,15 +148,59 @@ export function AppSidebar() {
           <DialogHeader>
             <DialogTitle>Edit name</DialogTitle>
           </DialogHeader>
+        
+          <div className="flex gap-2 items-center">
+            <Input
+              className="flex-1"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+            />
 
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Your name"
-          />
+            <Button onClick={handleSave}>
+              Save
+            </Button>
+          </div>
 
-          <DialogFooter>
-            <Button onClick={handleSave}>Save</Button>
+          <div></div>
+        <div className="flex items-center gap-2">
+
+          <DialogHeader className="flex-1">
+            <DialogTitle>Delete Account:</DialogTitle>
+          </DialogHeader>
+
+          <Button
+            variant="destructive"
+            onClick={async () => {
+              if (!user) return;
+
+              const confirmed = confirm(
+                "Are you sure you want to delete your account?"
+              );
+
+              if (!confirmed) return;
+
+              try {
+                await UsersAPI.remove(user._id);
+
+                logout();
+
+                toast.success("Account deleted");
+
+                nav({ to: "/login" });
+
+              } catch {
+                toast.error("Failed to delete account");
+              }
+            }}
+          >
+            Delete Account
+          </Button>
+        </div>
+          
+
+          <DialogFooter className="flex justify-between">
+            
           </DialogFooter>
         </DialogContent>
       </Dialog>

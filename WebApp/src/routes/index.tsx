@@ -26,13 +26,11 @@ function Dashboard() {
   });
 
   const watchedCount = history.data?.length ?? 0;
-  const unwatchedCount = unwatched.data?.length ?? 0;
-  const total = (movies.data?.length ?? 0) || watchedCount + unwatchedCount;
+  const total = (movies.data?.length ?? 0);
   const pct = total ? Math.round((watchedCount / total) * 100) : 0;
 
   const stats = [
     { label: "Watched", value: watchedCount, icon: Eye, color: "text-green-600" },
-    { label: "Not Watched", value: unwatchedCount, icon: EyeOff, color: "text-amber-600" },
     { label: "Total Movies", value: total, icon: Film, color: "text-primary" },
   ];
 
@@ -40,7 +38,7 @@ function Dashboard() {
     <div className="p-6 md:p-8 space-y-6">
       <PageHeader title="My Dashboard" subtitle={user ? `Welcome back, ${user.name}` : "Overview"} />
 
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
         {stats.map((s) => (
           <Card key={s.label}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">

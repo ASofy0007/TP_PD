@@ -14,6 +14,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { Plus, ChevronsUpDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/users")({
   component: UsersPage,
@@ -44,39 +45,24 @@ function UsersPage() {
     onError: () => toast.error("Failed to create user"),
   });
 
-  const list = useMemo(() => users.data ?? [], [users.data]);
+  const { user } = useAuth();
+
+  const list = useMemo(() => {
+    return (users.data ?? []).filter((u) => u._id !== user?._id);
+  }, [users.data, user]);
 
   return (
     <div className="p-6 md:p-8 space-y-6">
       <PageHeader
         title="Users"
-        subtitle="Search users and view their watch history"
-        action={
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button><Plus className="h-4 w-4 mr-1" /> Add User</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader><DialogTitle>Create user</DialogTitle></DialogHeader>
-              <form
-                onSubmit={(e) => { e.preventDefault(); createU.mutate({ name, email }); }}
-                className="space-y-4"
-              >
-                <div className="space-y-2"><Label>Name</Label><Input required value={name} onChange={(e) => setName(e.target.value)} /></div>
-                <div className="space-y-2"><Label>Email</Label><Input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></div>
-                <DialogFooter>
-                  <Button type="submit" disabled={createU.isPending}>{createU.isPending ? "Saving…" : "Create"}</Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        }
+        subtitle="Browse other users and view their watch history"
       />
 
       <Card>
         <CardContent className="p-6 space-y-4">
           <div className="space-y-2 max-w-md">
             <Label>Search a user</Label>
+            <div></div>
             <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" className="w-full justify-between">
@@ -142,35 +128,6 @@ function UsersPage() {
                 </Table>
               )}
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="p-0">
-          {users.isLoading && <p className="p-6 text-muted-foreground">Loading…</p>}
-          {users.isError && <p className="p-6 text-destructive text-sm">Failed to load users.</p>}
-          {list.length > 0 && (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {list.map((u) => (
-                  <TableRow key={u._id}>
-                    <TableCell className="font-medium">{u.name}</TableCell>
-                    <TableCell className="text-muted-foreground">{u.email}</TableCell>
-                    <TableCell className="text-right">
-                      <Button size="sm" variant="ghost" onClick={() => setSelected(u)}>View history</Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
           )}
         </CardContent>
       </Card>
