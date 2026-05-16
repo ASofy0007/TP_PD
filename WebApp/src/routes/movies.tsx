@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/PageHeader";
-import { Plus, Trash2, Check, Film } from "lucide-react";
+import { Plus, Trash2, Check, Film, Pencil } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/movies")({
@@ -31,6 +31,8 @@ function MoviesPage() {
   });
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState<Filter>("all");
+  const [editOpen, setEditOpen] = useState(false);
+  const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
 
   const watchedIds = useMemo(() => {
     const s = new Set<string>();
@@ -53,6 +55,18 @@ function MoviesPage() {
     mutationFn: MoviesAPI.remove,
     onSuccess: () => { invalidate(); toast.success("Movie deleted"); },
     onError: () => toast.error("Failed to delete"),
+  });
+  const updateM = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<Movie> }) =>
+      MoviesAPI.update(id, data),
+
+    onSuccess: () => {
+      invalidate();
+      setEditOpen(false);
+      toast.success("Movie updated");
+    },
+
+    onError: () => toast.error("Failed to update movie"),
   });
   const watchM = useMutation({
     mutationFn: (movieId: string) =>
@@ -121,20 +135,67 @@ function MoviesPage() {
               <CardContent className="flex-1 space-y-1 text-sm text-muted-foreground">
                 <div>{m.genre} • {m.releaseYear}</div>
               </CardContent>
-              <CardFooter className="gap-2">
+              <CardFooter className="flex gap-2">
                 {!isWatched && (
-                  <Button size="sm" variant="outline" onClick={() => watchM.mutate(m._id)} disabled={watchM.isPending || !user}>
-                    <Check className="h-4 w-4 mr-1" /> Mark as Watched
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => watchM.mutate(m._id)}
+                    disabled={watchM.isPending || !user}
+                  >
+                    <Check className="h-4 w-4 mr-1" />
+                    Mark as Watched
                   </Button>
                 )}
-                <Button size="sm" variant="ghost" className="ml-auto text-destructive hover:text-destructive" onClick={() => deleteM.mutate(m._id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+
+                {/* ESPAÇADOR */}
+                <div className="ml-auto flex">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setEditingMovie(m);
+                      setEditOpen(true);
+                    }}
+                  >
+                    <Pencil className="h-3 w-3" />
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-destructive hover:text-destructive"
+                    onClick={() => deleteM.mutate(m._id)}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
               </CardFooter>
             </Card>
           );
         })}
       </div>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Movie</DialogTitle>
+          </DialogHeader>
+
+          {editingMovie && (
+            <MovieEditForm
+              movie={editingMovie}
+              loading={updateM.isPending}
+              onSubmit={(data) =>
+                updateM.mutate({
+                  id: editingMovie._id,
+                  data,
+                })
+              }
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -157,6 +218,69 @@ function MovieForm({ onSubmit, loading }: { onSubmit: (d: Partial<Movie>) => voi
       <div className="space-y-2"><Label>Release Year</Label><Input required type="number" value={releaseYear} onChange={(e) => setReleaseYear(e.target.value === "" ? "" : Number(e.target.value))} /></div>
       <DialogFooter>
         <Button type="submit" disabled={loading}>{loading ? "Saving…" : "Add Movie"}</Button>
+      </DialogFooter>
+    </form>
+  );
+}
+
+function MovieEditForm({
+  movie,
+  onSubmit,
+  loading,
+}: {
+  movie: Movie;
+  onSubmit: (d: Partial<Movie>) => void;
+  loading: boolean;
+}) {
+  const [title, setTitle] = useState(movie.title);
+  const [genre, setGenre] = useState(movie.genre);
+  const [releaseYear, setReleaseYear] = useState(movie.releaseYear);
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+
+        onSubmit({
+          title,
+          genre,
+          releaseYear,
+        });
+      }}
+      className="space-y-4"
+    >
+      <div className="space-y-2">
+        <Label>Title</Label>
+        <Input
+          required
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Genre</Label>
+        <Input
+          required
+          value={genre}
+          onChange={(e) => setGenre(e.target.value)}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label>Release Year</Label>
+        <Input
+          required
+          type="number"
+          value={releaseYear}
+          onChange={(e) => setReleaseYear(Number(e.target.value))}
+        />
+      </div>
+
+      <DialogFooter>
+        <Button type="submit" disabled={loading}>
+          {loading ? "Saving..." : "Save Changes"}
+        </Button>
       </DialogFooter>
     </form>
   );

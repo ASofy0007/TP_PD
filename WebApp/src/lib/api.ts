@@ -50,8 +50,10 @@ export const MoviesAPI = {
   list: () => api.get<Movie[]>("/movies").then((r) => r.data),
   create: (data: Partial<Movie>) =>
     api.post<Movie>("/movies", data).then((r) => r.data),
-  update: (id: string, data: Partial<Movie>) =>
-    api.put<Movie>(`/movies/${id}`, data).then((r) => r.data),
+  update: async (id: string, data: Partial<Movie>) => {
+    const res = await api.put(`/movies/${id}`, data);
+    return res.data;
+  },
   remove: (id: string) => api.delete(`/movies/${id}`).then((r) => r.data),
 };
 
