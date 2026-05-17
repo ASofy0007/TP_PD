@@ -31,9 +31,6 @@ services:
       - mongo
     environment:
       - MONGO_URI=mongodb://mongo:27017/moviesdb
-    volumes:
-      - ./RestApi:/app
-      - /app/node_modules
 
   frontend:
     image: pedrodinis/movies-frontend:latest
@@ -43,9 +40,6 @@ services:
       - "8080:8080"
     depends_on:
       - backend
-    volumes:
-      - ./WebApp:/app
-      - /app/node_modules
 
 volumes:
   mongo_data:
