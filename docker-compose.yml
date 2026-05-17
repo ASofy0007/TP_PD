@@ -14,7 +14,7 @@ services:
     container_name: mongo-express
     restart: always
     ports:
-      - "8081:8081"
+      - "8082:8082"
     environment:
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_BASICAUTH: "false"
@@ -22,7 +22,6 @@ services:
       - mongo
       
   backend:
-    build: ./RestApi
     image: pedrodinis/movies-backend:latest
     container_name: movies-backend
     restart: always
@@ -37,7 +36,6 @@ services:
       - /app/node_modules
 
   frontend:
-    build: ./WebApp
     image: pedrodinis/movies-frontend:latest
     container_name: movies-frontend
     restart: always
