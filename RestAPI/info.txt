@@ -40,4 +40,20 @@ GET /history/unwatched/:id
 
 
 
+para correr containers: docker compose up --build
+para parar: docker compose down
 
+Docker Hub - guarda as imagens backend e frontend
+no terminal (depois de criar conta docker):
+	- docker login
+	para RestApi
+	- docker build -t movies-backend .
+	para WebApp
+	- docker build -t movies-frontend .
+	criar tags:
+	docker tag movies-backend «username»/movies-backend:latest
+	docker tag movies-frontend «username»/movies-frontend:latest
+
+	docker push
+
+  	adicionar image path to docker compose
