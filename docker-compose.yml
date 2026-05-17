@@ -1,0 +1,53 @@
+services:
+
+  mongo:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_BASICAUTH: "false"
+    depends_on:
+      - mongo
+      
+  backend:
+    build: ./RestApi
+    image: pedrodinis/movies-backend:latest
+    container_name: movies-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/moviesdb
+    volumes:
+      - ./RestApi:/app
+      - /app/node_modules
+
+  frontend:
+    build: ./WebApp
+    image: pedrodinis/movies-frontend:latest
+    container_name: movies-frontend
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend
+    volumes:
+      - ./WebApp:/app
+      - /app/node_modules
+
+volumes:
+  mongo_data:
