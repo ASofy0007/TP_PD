@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers {
+        pollSCM('H/* * * * *')
+    }
+
     environment {
         BACKEND_IMAGE = "pedrodinis/movies-backend"
         FRONTEND_IMAGE = "pedrodinis/movies-frontend"
