@@ -1,0 +1,16 @@
+- hosts: web
+  become: yes
+
+  tasks:
+
+    - name: Pull backend image
+      shell: docker pull pedrodinis/movies-backend:latest
+
+    - name: Pull frontend image
+      shell: docker pull pedrodinis/movies-frontend:latest
+
+    - name: Restart containers
+      shell: |
+        cd /home/ssilva/movies-app
+        docker compose down
+        docker compose up -d
