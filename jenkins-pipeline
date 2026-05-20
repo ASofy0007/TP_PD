@@ -1,0 +1,67 @@
+pipeline {
+    agent any
+
+    environment {
+        BACKEND_IMAGE = "pedrodinis/movies-backend"
+        FRONTEND_IMAGE = "pedrodinis/movies-frontend"
+    }
+
+    stages {
+
+        stage('Clone') {
+            steps {
+                git branch: 'main', url: 'https://github.com/ASofy0007/TP_PD'
+            }
+        }
+
+        stage('Build Backend') {
+            steps {
+                dir('RestAPI') {
+                    sh 'docker build -t $BACKEND_IMAGE:latest .'
+                }
+            }
+        }
+
+        stage('Build Frontend') {
+            steps {
+                dir('WebApp') {
+                    sh 'docker build -t $FRONTEND_IMAGE:latest .'
+                }
+            }
+        }
+
+        stage('Login & Push') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-token',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASS'
+                )]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker push pedrodinis/movies-backend:latest
+                        docker push pedrodinis/movies-frontend:latest
+                    '''
+                }
+            }
+        }
+        stage ('Deploy'){
+            steps{
+                sh '''
+                    docker-compose pull
+                    docker-compose up -d --remove-orphans
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline succeeded!'
+        }
+
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
