@@ -9,6 +9,11 @@
 
     - name: Pull frontend image
       shell: docker pull pedrodinis/movies-frontend:latest
+      
+    - name: Stop old containers
+      shell: |
+        cd /home/ssilva/movies-app
+        docker-compose down
 
     - name: Restart containers
       shell: |
