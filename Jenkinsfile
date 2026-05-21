@@ -45,11 +45,10 @@ pipeline {
                 }
             }
         }
-        stage ('Deploy'){
-            steps{
+        stage('Deploy with Ansible') {
+            steps {
                 sh '''
-                    docker-compose pull
-                    docker-compose up -d --remove-orphans
+                    ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
                 '''
             }
         }
