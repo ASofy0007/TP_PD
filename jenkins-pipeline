@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    triggers {
-        pollSCM('H/* * * * *')
-    }
-
     environment {
         BACKEND_IMAGE = "pedrodinis/movies-backend"
         FRONTEND_IMAGE = "pedrodinis/movies-frontend"
@@ -59,13 +55,31 @@ pipeline {
         }
     }
 
-    post {
+   post {
         success {
-            echo 'Pipeline succeeded!'
+            emailext(
+                subject: "SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                    Build succeeded!
+    
+                    Project: ${env.JOB_NAME}
+                    Build Number: ${env.BUILD_NUMBER}
+                """,
+                to: "test@mailtrap.io"
+            )
         }
-
+    
         failure {
-            echo 'Pipeline failed!'
+            emailext(
+                subject: "FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                    Build failed!
+    
+                    Project: ${env.JOB_NAME}
+                    Build Number: ${env.BUILD_NUMBER}
+                """,
+                to: "test@mailtrap.io"
+            )
         }
     }
 }
