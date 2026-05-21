@@ -115,7 +115,7 @@ function LoginPage() {
             <form onSubmit={handleEmailSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label>Email</Label>
-                <Label>Email</Label>
+               
                 <Input
                   type="email"
                   required
