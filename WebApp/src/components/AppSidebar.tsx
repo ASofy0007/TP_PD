@@ -47,7 +47,9 @@ export function AppSidebar() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    useEffect(() => {
+      navigate("/login");
+    }, []);
   };
 
   const handleSave = async () => {
@@ -157,7 +159,9 @@ export function AppSidebar() {
                   await UsersAPI.remove(user._id);
                   logout();
                   toast.success("Account deleted");
-                  navigate("/login");
+                  useEffect(() => {
+                    navigate("/login");
+                  }, []);
                 } catch {
                   toast.error("Failed to delete account");
                 }
