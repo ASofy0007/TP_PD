@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { UsersAPI } from "@/lib/api";
@@ -14,12 +14,6 @@ export default function LoginPage() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in
-  if (user) {
-    navigate("/");
-    return null;
-  }
-
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"email" | "name">("email");
@@ -28,15 +22,18 @@ export default function LoginPage() {
 
   useQuery({ queryKey: ["users"], queryFn: UsersAPI.list });
 
+  // Todos os hooks têm de estar ANTES de qualquer return condicional
+  useEffect(() => {
+    if (user) navigate("/");
+  }, [user, navigate]);
+
+  if (user) return null;
+
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const res = await UsersAPI.login({
-        email: email.trim().toLowerCase(),
-      });
-
+      const res = await UsersAPI.login({ email: email.trim().toLowerCase() });
       login(res);
       navigate("/");
     } catch (err: any) {
@@ -54,13 +51,8 @@ export default function LoginPage() {
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const res = await UsersAPI.login({
-        email: pendingEmail,
-        name,
-      });
-
+      const res = await UsersAPI.login({ email: pendingEmail, name });
       login(res);
       navigate("/");
     } catch {
