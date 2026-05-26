@@ -1,17 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { MoviesAPI, UsersAPI, HistoryAPI, getHistoryMovie } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Film, Eye, EyeOff } from "lucide-react";
+import { Film, Eye } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 
-export const Route = createFileRoute("/")({
-  component: Dashboard,
-});
-
-function Dashboard() {
+export default function Dashboard() {
   const { user } = useAuth();
   const movies = useQuery({ queryKey: ["movies"], queryFn: MoviesAPI.list });
   const history = useQuery({
@@ -19,14 +14,9 @@ function Dashboard() {
     queryFn: () => UsersAPI.history(user!._id),
     enabled: !!user,
   });
-  const unwatched = useQuery({
-    queryKey: ["unwatched", user?._id],
-    queryFn: () => HistoryAPI.unwatched(user!._id),
-    enabled: !!user,
-  });
 
   const watchedCount = history.data?.length ?? 0;
-  const total = (movies.data?.length ?? 0);
+  const total = movies.data?.length ?? 0;
   const pct = total ? Math.round((watchedCount / total) * 100) : 0;
 
   const stats = [

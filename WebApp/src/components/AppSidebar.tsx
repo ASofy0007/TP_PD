@@ -1,6 +1,5 @@
-import { useState } from "react";
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Film,
@@ -35,21 +34,20 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const pathname = useRouterState({
-    select: (state) => state.location.pathname,
-  });
+  const { pathname } = useLocation();
   const { user, logout, login } = useAuth();
-  const nav = useNavigate();
+  const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(user?.name ?? "");
+
   useEffect(() => {
     setName(user?.name ?? "");
   }, [user]);
 
   const handleLogout = () => {
     logout();
-    nav({ to: "/login" });
+    navigate("/login");
   };
 
   const handleSave = async () => {
@@ -60,13 +58,9 @@ export function AppSidebar() {
     }
 
     try {
-      const updated = await UsersAPI.update(user._id, {
-        name,
-      });
-
-      login(updated); // atualiza estado global
+      const updated = await UsersAPI.update(user._id, { name });
+      login(updated);
       setOpen(false);
-
       toast.success("Name updated");
     } catch {
       toast.error("Failed to update name");
@@ -85,7 +79,6 @@ export function AppSidebar() {
       <nav className="flex-1 p-3 space-y-1">
         {items.map((item) => {
           const active = pathname === item.url;
-
           return (
             <Link
               key={item.url}
@@ -109,25 +102,15 @@ export function AppSidebar() {
         <div className="border-t p-3 space-y-2">
           <div className="px-2 py-1">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium truncate">
-                {user.name}
-              </span>
-
-              {/* EDIT BUTTON */}
+              <span className="text-sm font-medium truncate">{user.name}</span>
               <button
-                onClick={() => {
-                  setName(user?.name ?? "");
-                  setOpen(true);
-                }}
+                onClick={() => { setName(user?.name ?? ""); setOpen(true); }}
                 className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
               >
                 <Pencil className="h-3 w-3" />
               </button>
             </div>
-
-            <div className="text-xs text-muted-foreground truncate">
-              {user.email}
-            </div>
+            <div className="text-xs text-muted-foreground truncate">{user.email}</div>
           </div>
 
           <Button
@@ -148,7 +131,7 @@ export function AppSidebar() {
           <DialogHeader>
             <DialogTitle>Edit name</DialogTitle>
           </DialogHeader>
-        
+
           <div className="flex gap-2 items-center">
             <Input
               className="flex-1"
@@ -156,52 +139,35 @@ export function AppSidebar() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Your name"
             />
+            <Button onClick={handleSave}>Save</Button>
+          </div>
 
-            <Button onClick={handleSave}>
-              Save
+          <div className="flex items-center gap-2">
+            <DialogHeader className="flex-1">
+              <DialogTitle>Delete Account:</DialogTitle>
+            </DialogHeader>
+
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                if (!user) return;
+                const confirmed = confirm("Are you sure you want to delete your account?");
+                if (!confirmed) return;
+                try {
+                  await UsersAPI.remove(user._id);
+                  logout();
+                  toast.success("Account deleted");
+                  navigate("/login");
+                } catch {
+                  toast.error("Failed to delete account");
+                }
+              }}
+            >
+              Delete Account
             </Button>
           </div>
 
-          <div></div>
-        <div className="flex items-center gap-2">
-
-          <DialogHeader className="flex-1">
-            <DialogTitle>Delete Account:</DialogTitle>
-          </DialogHeader>
-
-          <Button
-            variant="destructive"
-            onClick={async () => {
-              if (!user) return;
-
-              const confirmed = confirm(
-                "Are you sure you want to delete your account?"
-              );
-
-              if (!confirmed) return;
-
-              try {
-                await UsersAPI.remove(user._id);
-
-                logout();
-
-                toast.success("Account deleted");
-
-                nav({ to: "/login" });
-
-              } catch {
-                toast.error("Failed to delete account");
-              }
-            }}
-          >
-            Delete Account
-          </Button>
-        </div>
-          
-
-          <DialogFooter className="flex justify-between">
-            
-          </DialogFooter>
+          <DialogFooter />
         </DialogContent>
       </Dialog>
     </aside>

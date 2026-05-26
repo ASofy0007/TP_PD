@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { MoviesAPI, HistoryAPI, UsersAPI, type Movie, getHistoryMovieId } from "@/lib/api";
@@ -14,13 +13,9 @@ import { PageHeader } from "@/components/PageHeader";
 import { Plus, Trash2, Check, Film, Pencil } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/movies")({
-  component: MoviesPage,
-});
-
 type Filter = "all" | "watched" | "unwatched";
 
-function MoviesPage() {
+export default function MoviesPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const movies = useQuery({ queryKey: ["movies"], queryFn: MoviesAPI.list });
@@ -59,13 +54,7 @@ function MoviesPage() {
   const updateM = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<Movie> }) =>
       MoviesAPI.update(id, data),
-
-    onSuccess: () => {
-      invalidate();
-      setEditOpen(false);
-      toast.success("Movie updated");
-    },
-
+    onSuccess: () => { invalidate(); setEditOpen(false); toast.success("Movie updated"); },
     onError: () => toast.error("Failed to update movie"),
   });
   const watchM = useMutation({
@@ -147,20 +136,14 @@ function MoviesPage() {
                     Mark as Watched
                   </Button>
                 )}
-
-                {/* ESPAÇADOR */}
                 <div className="ml-auto flex">
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={() => {
-                      setEditingMovie(m);
-                      setEditOpen(true);
-                    }}
+                    onClick={() => { setEditingMovie(m); setEditOpen(true); }}
                   >
                     <Pencil className="h-3 w-3" />
                   </Button>
-
                   <Button
                     size="sm"
                     variant="ghost"
@@ -178,20 +161,12 @@ function MoviesPage() {
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Movie</DialogTitle>
-          </DialogHeader>
-
+          <DialogHeader><DialogTitle>Edit Movie</DialogTitle></DialogHeader>
           {editingMovie && (
             <MovieEditForm
               movie={editingMovie}
               loading={updateM.isPending}
-              onSubmit={(data) =>
-                updateM.mutate({
-                  id: editingMovie._id,
-                  data,
-                })
-              }
+              onSubmit={(data) => updateM.mutate({ id: editingMovie._id, data })}
             />
           )}
         </DialogContent>
@@ -207,10 +182,7 @@ function MovieForm({ onSubmit, loading }: { onSubmit: (d: Partial<Movie>) => voi
 
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit({ title, genre, releaseYear: Number(releaseYear) });
-      }}
+      onSubmit={(e) => { e.preventDefault(); onSubmit({ title, genre, releaseYear: Number(releaseYear) }); }}
       className="space-y-4"
     >
       <div className="space-y-2"><Label>Title</Label><Input required value={title} onChange={(e) => setTitle(e.target.value)} /></div>
@@ -223,64 +195,21 @@ function MovieForm({ onSubmit, loading }: { onSubmit: (d: Partial<Movie>) => voi
   );
 }
 
-function MovieEditForm({
-  movie,
-  onSubmit,
-  loading,
-}: {
-  movie: Movie;
-  onSubmit: (d: Partial<Movie>) => void;
-  loading: boolean;
-}) {
+function MovieEditForm({ movie, onSubmit, loading }: { movie: Movie; onSubmit: (d: Partial<Movie>) => void; loading: boolean }) {
   const [title, setTitle] = useState(movie.title);
   const [genre, setGenre] = useState(movie.genre);
   const [releaseYear, setReleaseYear] = useState(movie.releaseYear);
 
   return (
     <form
-      onSubmit={(e) => {
-        e.preventDefault();
-
-        onSubmit({
-          title,
-          genre,
-          releaseYear,
-        });
-      }}
+      onSubmit={(e) => { e.preventDefault(); onSubmit({ title, genre, releaseYear }); }}
       className="space-y-4"
     >
-      <div className="space-y-2">
-        <Label>Title</Label>
-        <Input
-          required
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Genre</Label>
-        <Input
-          required
-          value={genre}
-          onChange={(e) => setGenre(e.target.value)}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Release Year</Label>
-        <Input
-          required
-          type="number"
-          value={releaseYear}
-          onChange={(e) => setReleaseYear(Number(e.target.value))}
-        />
-      </div>
-
+      <div className="space-y-2"><Label>Title</Label><Input required value={title} onChange={(e) => setTitle(e.target.value)} /></div>
+      <div className="space-y-2"><Label>Genre</Label><Input required value={genre} onChange={(e) => setGenre(e.target.value)} /></div>
+      <div className="space-y-2"><Label>Release Year</Label><Input required type="number" value={releaseYear} onChange={(e) => setReleaseYear(Number(e.target.value))} /></div>
       <DialogFooter>
-        <Button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Save Changes"}
-        </Button>
+        <Button type="submit" disabled={loading}>{loading ? "Saving..." : "Save Changes"}</Button>
       </DialogFooter>
     </form>
   );

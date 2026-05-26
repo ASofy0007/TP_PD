@@ -1,5 +1,5 @@
-import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { UsersAPI } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
@@ -10,48 +10,23 @@ import { Label } from "@/components/ui/label";
 import { Clapperboard } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/login")({
-  beforeLoad: () => {
-    if (typeof window !== "undefined" && localStorage.getItem("cinetrack:user")) {
-      throw redirect({ to: "/" });
-    }
-  },
-  component: LoginPage,
-});
+export default function LoginPage() {
+  const { user, login } = useAuth();
+  const navigate = useNavigate();
 
-function LoginPage() {
-  const { login } = useAuth();
-  const nav = useNavigate();
-  
+  // Redirect if already logged in
+  if (user) {
+    navigate("/");
+    return null;
+  }
+
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState<"email" | "name">("email");
   const [pendingEmail, setPendingEmail] = useState("");
   const [name, setName] = useState("");
 
-  const users = useQuery({ queryKey: ["users"], queryFn: UsersAPI.list });
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const res = await UsersAPI.login({
-        email: email.trim().toLowerCase(),
-      });
-
-      login(res);
-
-      toast.success(`Welcome, ${res.name}`);
-
-      nav({ to: "/" });
-
-    } catch {
-      toast.error("Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useQuery({ queryKey: ["users"], queryFn: UsersAPI.list });
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,10 +38,8 @@ function LoginPage() {
       });
 
       login(res);
-      nav({ to: "/" });
-
+      navigate("/");
     } catch (err: any) {
-
       if (err?.response?.data?.needsName) {
         setPendingEmail(email);
         setStep("name");
@@ -85,20 +58,17 @@ function LoginPage() {
     try {
       const res = await UsersAPI.login({
         email: pendingEmail,
-        name
+        name,
       });
 
       login(res);
-      nav({ to: "/" });
-
+      navigate("/");
     } catch {
       toast.error("Failed to create user");
     } finally {
       setLoading(false);
     }
   };
-
-
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
@@ -108,14 +78,15 @@ function LoginPage() {
             <Clapperboard className="h-6 w-6 text-primary" />
           </div>
           <CardTitle>Sign in to CineTrack</CardTitle>
-          <CardDescription>Enter your {step=="email"? (<a>email</a>):(<a>name</a>)} to continue</CardDescription>
+          <CardDescription>
+            Enter your {step === "email" ? "email" : "name"} to continue
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {step === "email" ? (
             <form onSubmit={handleEmailSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label>Email</Label>
-               
                 <Input
                   type="email"
                   required
@@ -124,7 +95,6 @@ function LoginPage() {
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-
               <Button type="submit" className="w-full" disabled={loading}>
                 Continue
               </Button>
@@ -143,9 +113,7 @@ function LoginPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
-                
               </div>
-
               <Button type="submit" className="w-full" disabled={loading}>
                 Create account
               </Button>

@@ -1,31 +1,21 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { UsersAPI, getHistoryMovie, type User } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PageHeader } from "@/components/PageHeader";
-import { Plus, ChevronsUpDown, Check } from "lucide-react";
+import { ChevronsUpDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 
-export const Route = createFileRoute("/users")({
-  component: UsersPage,
-});
-
-function UsersPage() {
+export default function UsersPage() {
   const qc = useQueryClient();
   const users = useQuery({ queryKey: ["users"], queryFn: UsersAPI.list });
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [selected, setSelected] = useState<User | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -33,16 +23,6 @@ function UsersPage() {
     queryKey: ["history", selected?._id],
     queryFn: () => UsersAPI.history(selected!._id),
     enabled: !!selected,
-  });
-
-  const createU = useMutation({
-    mutationFn: UsersAPI.create,
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["users"] });
-      setOpen(false); setName(""); setEmail("");
-      toast.success("User created");
-    },
-    onError: () => toast.error("Failed to create user"),
   });
 
   const { user } = useAuth();
@@ -62,7 +42,6 @@ function UsersPage() {
         <CardContent className="p-6 space-y-4">
           <div className="space-y-2 max-w-md">
             <Label>Search a user</Label>
-            <div></div>
             <Popover open={pickerOpen} onOpenChange={setPickerOpen}>
               <PopoverTrigger asChild>
                 <Button variant="outline" role="combobox" className="w-full justify-between">

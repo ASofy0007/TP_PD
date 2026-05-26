@@ -1,4 +1,3 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { format } from "date-fns";
@@ -15,11 +14,7 @@ import { Pencil, Trash2, History as HistoryIcon, CalendarIcon } from "lucide-rea
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/history")({
-  component: HistoryPage,
-});
-
-function HistoryPage() {
+export default function HistoryPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
   const history = useQuery({
