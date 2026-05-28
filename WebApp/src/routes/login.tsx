@@ -20,8 +20,6 @@ export default function LoginPage() {
   const [pendingEmail, setPendingEmail] = useState("");
   const [name, setName] = useState("");
 
-  useQuery({ queryKey: ["users"], queryFn: UsersAPI.list });
-
   // Todos os hooks têm de estar ANTES de qualquer return condicional
   useEffect(() => {
     if (user) navigate("/");
