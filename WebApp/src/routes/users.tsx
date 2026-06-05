@@ -11,6 +11,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { ChevronsUpDown, Check, RefreshCw, Cloud } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
+import { S3API } from "@/lib/api";
 
 export default function UsersPage() {
   const users = useQuery({ queryKey: ["users"], queryFn: UsersAPI.list });
@@ -24,11 +25,10 @@ export default function UsersPage() {
     enabled: !!selected,
   });
 
-  // Query para buscar lista de utilizadores do S3
   const s3Users = useQuery({
     queryKey: ["s3-users"],
-    queryFn: () => fetch("/api/files/users").then((r) => r.json()),
-    enabled: false, // só corre quando chamarmos manualmente
+    queryFn: () => S3API.getUsers(),
+    enabled: false,
   });
 
   const { user } = useAuth();

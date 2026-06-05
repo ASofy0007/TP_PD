@@ -78,3 +78,36 @@ export function getHistoryMovieId(entry: HistoryEntry): string {
   if (entry.movieId && typeof entry.movieId === "object") return (entry.movieId as Movie)._id;
   return "";
 }
+export const S3API = {
+  getUsers: async (): Promise<User[]> => {
+    const res = await api.get<User[]>("/s3/users");
+    return res.data;
+  },
+
+  saveUsers: async (users: User[]): Promise<void> => {
+    await api.post("/s3/upload", {
+      fileName: "users.json",
+      fileContent: btoa(JSON.stringify(users)),
+      mimeType: "application/json",
+    });
+  },
+
+  addUser: async (user: User): Promise<void> => {
+    const allUsers = await S3API.getUsers();
+    allUsers.push(user);
+    await S3API.saveUsers(allUsers);
+  },
+
+  uploadFile: async (fileName: string, fileBuffer: ArrayBuffer, mimeType: string) => {
+    const fileContent = btoa(
+      String.fromCharCode(...new Uint8Array(fileBuffer))
+    );
+
+    await api.post("/s3/upload", {
+      fileName,
+      fileContent,
+      mimeType,
+    });
+  },
+
+};

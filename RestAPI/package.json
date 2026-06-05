@@ -12,13 +12,17 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.1062.0",
     "@aws-sdk/client-s3": "^3.1062.0",
+    "@aws-sdk/client-sns": "^3.1062.0",
+    "@aws-sdk/client-sts": "^3.1062.0",
     "@aws-sdk/s3-request-presigner": "^3.1062.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.6.2",
-    "multer": "^2.1.1"
+    "multer": "^2.1.1",
+    "node-cron": "^4.2.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Clapperboard } from "lucide-react";
 import { toast } from "sonner";
+import { S3API } from "@/lib/api";
 
 export default function LoginPage() {
   const { user, login } = useAuth();
@@ -52,6 +53,18 @@ export default function LoginPage() {
     try {
       const res = await UsersAPI.login({ email: pendingEmail, name });
       login(res);
+      const apiUrl = import.meta.env.VITE_API_URL;
+      const allUsers = await fetch(`${apiUrl}/s3`).then(r => r.json());
+      allUsers.push({ _id: res._id, name: res.name, email: res.email });
+      await fetch(`${apiUrl}/s3/upload`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: "users.json",
+          fileContent: btoa(JSON.stringify(allUsers)),
+          mimeType: "application/json",
+        }),
+      });
       navigate("/");
     } catch {
       toast.error("Failed to create user");
