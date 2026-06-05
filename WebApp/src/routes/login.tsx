@@ -54,9 +54,9 @@ export default function LoginPage() {
       const res = await UsersAPI.login({ email: pendingEmail, name });
       login(res);
       const apiUrl = import.meta.env.VITE_API_URL;
-      const allUsers = await fetch(`${apiUrl}/s3`).then(r => r.json());
+      const allUsers = await fetch(`${apiUrl}s3/users`).then(r => r.json());
       allUsers.push({ _id: res._id, name: res.name, email: res.email });
-      await fetch(`${apiUrl}/s3/upload`, {
+      await fetch(`${apiUrl}s3/upload`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
