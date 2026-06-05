@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const WatchHistory = require('../models/WatchHistory');
+const { getUsersFromS3, saveUsersToS3 } = require("../services/s3Service");
 
 exports.getUsers = async (req, res) => {
 
@@ -19,21 +20,20 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.createUser = async (req, res) => {
-
   try {
-
     const user = new User(req.body);
-
     await user.save();
 
+    console.log('A guardar no S3...');
+    const allUsers = await getUsersFromS3();
+    allUsers.push({ _id: user._id, name: user.name, email: user.email });
+    await saveUsersToS3(allUsers);
+    console.log('Guardado no S3 com sucesso!');
+
     res.status(201).json(user);
-
   } catch (error) {
-
-    res.status(500).json({
-      message: error.message
-    });
-
+    console.error('Erro:', error.message);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -55,6 +55,12 @@ exports.loginUser = async (req, res) => {
         email,
         name
       });
+      
+      console.log('A guardar no S3...');
+      const allUsers = await getUsersFromS3();
+      allUsers.push({ _id: user._id, name: user.name, email: user.email });
+      await saveUsersToS3(allUsers);
+      console.log('Guardado no S3 com sucesso!');
     }
 
     res.json(user);

@@ -7,6 +7,14 @@ const movieRoutes = require('./routes/movieRoutes');
 const userRoutes = require('./routes/userRoutes');
 const historyRoutes = require('./routes/historyRoutes');
 
+let s3Routes;
+try {
+  s3Routes = require('./routes/s3Routes');
+  console.log('s3Routes loaded OK');
+} catch (err) {
+  console.error('Erro ao carregar s3Routes:', err.message);
+}
+
 const app = express();
 
 app.use(cors());
@@ -23,6 +31,7 @@ app.get('/', (req, res) => {
 app.use('/movies', movieRoutes);
 app.use('/users', userRoutes);
 app.use('/history', historyRoutes);
+if (s3Routes) app.use("/api/files", s3Routes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
